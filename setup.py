@@ -3,7 +3,7 @@ from setuptools import setup
 
 setup(
     name='backup_all_my_flickr_photos',
-    version='0.01',
+    version='0.1',
     description="A script to download all photos and videos in your Flickr account",
     author="David D Lowe",
     author_email="daviddlowe.flimm@gmail.com",
