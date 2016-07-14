@@ -7,6 +7,8 @@ setup(
     description="A script to download all photos and videos in your Flickr account",
     author="David D Lowe",
     author_email="daviddlowe.flimm@gmail.com",
+    url="https://github.com/Flimm/backup-all-my-flickr-photos",
+    download_url="https://github.com/Flimm/backup-all-my-flickr-photos/tarball/0.01",
     script=['backup-all-my-flickr-photos'],
     install_requires=[
         'flickr_api',
