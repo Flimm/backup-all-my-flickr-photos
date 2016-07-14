@@ -1,0 +1,3 @@
+include COPYING
+include README.md
+include backup-all-my-flickr-photos
