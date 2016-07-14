@@ -14,6 +14,7 @@ setup(
         'flickr_api',
         'humanfriendly',
     ],
+    license='bsd',
     classifiers=[
         'License :: OSI Approved :: BSD License',
         'Programming Language :: Python',
