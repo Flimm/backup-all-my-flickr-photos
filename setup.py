@@ -9,7 +9,7 @@ setup(
     author_email="daviddlowe.flimm@gmail.com",
     url="https://github.com/Flimm/backup-all-my-flickr-photos",
     download_url="https://github.com/Flimm/backup-all-my-flickr-photos/tarball/0.01",
-    script=['backup-all-my-flickr-photos'],
+    scripts=['bin/backup-all-my-flickr-photos'],
     install_requires=[
         'flickr_api',
         'humanfriendly',
