@@ -15,7 +15,7 @@ import json
 
 def main():
     parser = argparse.ArgumentParser(description="Download all your photos and videos on Flickr")
-    parser.add_argument('destination_directory', metavar='d', help='Destination directory')
+    parser.add_argument('destination_directory', metavar='d', type=unicode, help='Destination directory')
     parser.add_argument('--delete', action='store_true', help="Delete files in destination directory that don't have corresponding items in the Flickr account")
     args = parser.parse_args()
     download_dir = args.destination_directory
