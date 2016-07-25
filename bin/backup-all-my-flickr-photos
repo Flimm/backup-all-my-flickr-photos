@@ -125,7 +125,7 @@ def download_item(photo, download_dir):
     extensions = ["jpg", "mov", "mp4"]
 
     if photo.title:
-        title = photo.title.replace('/', '')  # Remove slashes from the title
+        title = photo.title.replace(os.sep, '')  # Remove slashes from the title
         destname = "%s %s" % (title, photo.id)
     else:
         destname = "%s" % (photo.id, )
