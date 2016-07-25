@@ -12,6 +12,7 @@ import urllib
 import subprocess
 import argparse
 import json
+import re
 
 def main():
     parser = argparse.ArgumentParser(description="Download all your photos and videos on Flickr")
@@ -125,7 +126,8 @@ def download_item(photo, download_dir):
     extensions = ["jpg", "mov", "mp4"]
 
     if photo.title:
-        destname = "%s %s" % (photo.title, photo.id)
+        title = photo.title.replace('/', '')  # Remove slashes from the title
+        destname = "%s %s" % (title, photo.id)
     else:
         destname = "%s" % (photo.id, )
 
