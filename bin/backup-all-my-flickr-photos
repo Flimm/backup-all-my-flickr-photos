@@ -12,7 +12,6 @@ import urllib
 import subprocess
 import argparse
 import json
-import re
 
 def main():
     parser = argparse.ArgumentParser(description="Download all your photos and videos on Flickr")
