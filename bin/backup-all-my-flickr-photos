@@ -9,7 +9,6 @@ import os
 import sys
 import shutil
 import urllib
-import subprocess
 import argparse
 import json
 
@@ -135,8 +134,8 @@ def download_item(photo, download_dir):
     if not file_exists():
         print("Downloading %r" % ("%s.EXTENSION" % destname))
         try:
-            download_file(photo, os.path.join(download_dir, "tmp"))
-            extension = guess_extension(os.path.join(download_dir, "tmp"))
+            headers = download_file(photo, os.path.join(download_dir, "tmp"))
+            extension = guess_extension(headers)
             shutil.move(os.path.join(download_dir, "tmp"), os.path.join(download_dir, "%s.%s" % (destname, extension)))
         finally:
             if os.path.exists(os.path.join(download_dir, "tmp")):
@@ -159,17 +158,18 @@ def download_file(photo, filename):
         if percentage >= 100:
             sys.stdout.write("\n")
             sys.stdout.flush()
-    urllib.urlretrieve(url, filename, report)
+    _, headers = urllib.urlretrieve(url, filename, report)
+    return headers
 
 
-def guess_extension(filename):
-    output = subprocess.check_output(["file", "--brief", "--mime-type", "--", filename])
+def guess_extension(headers):
+    mime_type = headers['Content-Type']
     extensions = {
         'image/jpeg': 'jpg',
         'video/mp4': 'mp4',
         'video/quicktime': 'mov',
     }
-    return extensions[output.strip()]
+    return extensions[mime_type]
 
 
 def clean_stale_files(files_in_flickr, download_dir):
