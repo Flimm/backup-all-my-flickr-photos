@@ -11,6 +11,7 @@ import shutil
 import urllib
 import argparse
 import json
+import urllib2
 
 _forbidden_characters = r'<>:"/\|?*'
 
@@ -100,14 +101,24 @@ def set_up_flickr_keys():
             flickr_api.set_keys(api_key=api_key, api_secret=api_secret)
             try:
                 flickr_api.Person.findByUserName("test8975234985432")
-                tested_api_successfully = True
             except flickr_api.flickrerrors.FlickrAPIError as ee:
                 if ee.code == 100:
                     print("This API key and secret combo seem to be invalid")
                     api_key, api_secret = None, None
+                    continue
                 elif ee.code == 1:
                     # This is a user not found error
-                    tested_api_successfully = True
+                    pass
+                else:
+                    raise
+            try:
+                flickr_api.auth.AuthHandler()
+                tested_api_successfully = True
+            except urllib2.HTTPError as ee:
+                if ee.code == 401:
+                    print("This API key and secret combo seem to be invalid")
+                    api_key, api_secret = None, None
+                    continue
                 else:
                     raise
                 
