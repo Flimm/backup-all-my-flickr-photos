@@ -15,6 +15,7 @@ setup(
     install_requires=[
         'flickr_api',
         'humanfriendly',
+        'python-magic',
     ],
     license='bsd',
     classifiers=[

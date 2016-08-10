@@ -4,6 +4,7 @@ from __future__ import absolute_import, division, print_function
 
 import flickr_api
 import humanfriendly
+import magic
 
 import os
 import sys
@@ -147,8 +148,9 @@ def download_item(photo, download_dir):
     if not file_exists():
         print("Downloading %r" % ("%s.EXTENSION" % destname))
         try:
-            headers = download_file(photo, os.path.join(download_dir, "tmp"))
-            extension = guess_extension(headers)
+            download_file(photo, os.path.join(download_dir, "tmp"))
+            extension = guess_extension(os.path.join(download_dir, "tmp"))
+            print("Renaming to %s.%s" % (destname, extension))
             shutil.move(os.path.join(download_dir, "tmp"), os.path.join(download_dir, "%s.%s" % (destname, extension)))
         finally:
             if os.path.exists(os.path.join(download_dir, "tmp")):
@@ -171,8 +173,7 @@ def download_file(photo, filename):
         if percentage >= 100:
             sys.stdout.write("\n")
             sys.stdout.flush()
-    _, headers = urllib.urlretrieve(url, filename, report)
-    return headers
+    urllib.urlretrieve(url, filename, report)
 
 
 def preferred_size(photo):
@@ -184,8 +185,8 @@ def preferred_size(photo):
     raise(Exception("Could not find size 'Video Original' or 'Original' for photo %r" % (photo,)))
 
 
-def guess_extension(headers):
-    mime_type = headers['Content-Type']
+def guess_extension(filename):
+    mime = magic.from_file(filename, mime=True)
     extensions = {
         'image/jpeg': 'jpg',
         'image/png': 'png',
@@ -193,7 +194,7 @@ def guess_extension(headers):
         'video/quicktime': 'mov',
         'application/x-shockwave-flash': 'flv',
     }
-    return extensions[mime_type]
+    return extensions[mime.strip()]
 
 
 def clean_stale_files(files_in_flickr, download_dir):
