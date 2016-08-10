@@ -145,11 +145,12 @@ def download_item(photo, download_dir):
     file_exists = lambda: any([os.path.exists(os.path.join(download_dir, "%s.%s" % (destname, x))) for x in _extensions])
 
     if not file_exists():
-        print("Downloading %r" % ("%s.EXTENSION" % destname))
         try:
             url, headers = download_file(photo, os.path.join(download_dir, "tmp"))
             extension = guess_extension(url, headers)
-            shutil.move(os.path.join(download_dir, "tmp"), os.path.join(download_dir, "%s.%s" % (destname, extension)))
+            to = os.path.join(download_dir, "%s.%s" % (destname, extension))
+            shutil.move(os.path.join(download_dir, "tmp"), to)
+            print("Done: %r" % (to,))
         finally:
             if os.path.exists(os.path.join(download_dir, "tmp")):
                 os.remove(os.path.join(download_dir, "tmp"))
