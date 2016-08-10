@@ -162,7 +162,7 @@ def download_item(photo, download_dir):
 
 
 def download_file(photo, filename):
-    url = photo.getPhotoFile()
+    url = photo.getPhotoFile(preferred_size(photo))
     def report(count_of_block, block_size, total_size):
         # print(count_of_block, block_size, total_size)
         percentage = (count_of_block * block_size * 100 ) / total_size
@@ -173,6 +173,15 @@ def download_file(photo, filename):
             sys.stdout.flush()
     _, headers = urllib.urlretrieve(url, filename, report)
     return headers
+
+
+def preferred_size(photo):
+    sizes = photo.getSizes()
+    if 'Video Original' in sizes:
+        return 'Video Original'
+    elif 'Original' in sizes:
+        return 'Original'
+    raise(Exception("Could not find size 'Video Original' or 'Original' for photo %r" % (photo,)))
 
 
 def guess_extension(headers):
