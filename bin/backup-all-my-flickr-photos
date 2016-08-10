@@ -148,8 +148,8 @@ def download_item(photo, download_dir):
     if not file_exists():
         print("Downloading %r" % ("%s.EXTENSION" % destname))
         try:
-            download_file(photo, os.path.join(download_dir, "tmp"))
-            extension = guess_extension(os.path.join(download_dir, "tmp"))
+            url = download_file(photo, os.path.join(download_dir, "tmp"))
+            extension = guess_extension(os.path.join(download_dir, "tmp"), url)
             print("Renaming to %s.%s" % (destname, extension))
             shutil.move(os.path.join(download_dir, "tmp"), os.path.join(download_dir, "%s.%s" % (destname, extension)))
         finally:
@@ -174,6 +174,7 @@ def download_file(photo, filename):
             sys.stdout.write("\n")
             sys.stdout.flush()
     urllib.urlretrieve(url, filename, report)
+    return url
 
 
 def preferred_size(photo):
@@ -185,8 +186,8 @@ def preferred_size(photo):
     raise(Exception("Could not find size 'Video Original' or 'Original' for photo %r" % (photo,)))
 
 
-def guess_extension(filename):
-    mime = magic.from_file(filename, mime=True)
+def guess_extension(filename, url):
+    print("url: %s" % url)
     extensions = {
         'image/jpeg': 'jpg',
         'image/png': 'png',
@@ -194,6 +195,10 @@ def guess_extension(filename):
         'video/quicktime': 'mov',
         'application/x-shockwave-flash': 'flv',
     }
+    for extension in extensions.values():
+        if url.lower().endswith("." + extension):
+            return extension
+    mime = magic.from_file(filename, mime=True)
     return extensions[mime.strip()]
 
 
