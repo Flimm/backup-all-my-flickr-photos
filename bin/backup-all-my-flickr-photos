@@ -95,9 +95,9 @@ def set_up_flickr_keys():
         tested_api_successfully = False
         while not tested_api_successfully:
             while not api_key:
-                api_key = raw_input("API key: ")
+                api_key = raw_input("API key: ").strip()
             while not api_secret:
-                api_secret = raw_input("API secret: ")
+                api_secret = raw_input("API secret: ").strip()
             flickr_api.set_keys(api_key=api_key, api_secret=api_secret)
             try:
                 flickr_api.Person.findByUserName("test8975234985432")
