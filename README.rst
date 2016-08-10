@@ -20,7 +20,7 @@ If you want to install it globally, use this command::
     sudo pip install backup_all_my_flickr_photos
 
 Many people find it easiest to use
-```virtualenv`` <https://virtualenv.pypa.io/>`__.
+`Virtualenv <https://virtualenv.pypa.io/>`_.
 
 From source
 -----------
@@ -52,4 +52,4 @@ On the the first run, you will be prompted to provide an API key and
 secret, and to authorise the application.
 The script will guide you through this process.
 The information will get saved to
-``~/.local/backup-all-my-flickr-photos/``.
+``~/.config/backup-all-my-flickr-photos/``.
