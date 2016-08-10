@@ -134,7 +134,7 @@ def set_up_flickr_keys():
 
 
 def download_item(photo, download_dir):
-    extensions = ["jpg", "mov", "mp4"]
+    extensions = ["jpg", "mov", "mp4", "png", "flv"]
 
     if photo.title:
         title = reduce( lambda s,char: s.replace(char,''), _forbidden_characters, photo.title)
@@ -188,8 +188,10 @@ def guess_extension(headers):
     mime_type = headers['Content-Type']
     extensions = {
         'image/jpeg': 'jpg',
+        'image/png': 'png',
         'video/mp4': 'mp4',
         'video/quicktime': 'mov',
+        'application/x-shockwave-flash': 'flv',
     }
     return extensions[mime_type]
 
