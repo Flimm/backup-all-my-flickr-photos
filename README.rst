@@ -34,6 +34,14 @@ From source
     python setup.py develop # install dependencies and script
     backup-all-my-flickr-photos --help
 
+Installing required dependency ``libmagic``
+-------------------------------------------
+
+This script depends on ``python-magic``, which in turn depends on ``libmagic``.
+Most Linux distributions will already have this installed.
+Here are `instructions on how to install libmagic on OS X or on Windows
+<https://github.com/ahupp/python-magic#dependencies>`_.
+
 Run
 ===
 
