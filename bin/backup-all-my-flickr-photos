@@ -12,8 +12,10 @@ import urllib
 import argparse
 import json
 import urllib2
+import cgi
 
 _forbidden_characters = r'<>:"/\|?*'
+_extensions = ["jpg", "mov", "mp4", "png", "flv"]
 
 def main():
     parser = argparse.ArgumentParser(description="Download all your photos and videos on Flickr")
@@ -134,27 +136,25 @@ def set_up_flickr_keys():
 
 
 def download_item(photo, download_dir):
-    extensions = ["jpg", "mov", "mp4", "png", "flv"]
-
     if photo.title:
         title = reduce( lambda s,char: s.replace(char,''), _forbidden_characters, photo.title)
         destname = "%s %s" % (title, photo.id)
     else:
         destname = "%s" % (photo.id, )
 
-    file_exists = lambda: any([os.path.exists(os.path.join(download_dir, "%s.%s" % (destname, x))) for x in extensions])
+    file_exists = lambda: any([os.path.exists(os.path.join(download_dir, "%s.%s" % (destname, x))) for x in _extensions])
 
     if not file_exists():
         print("Downloading %r" % ("%s.EXTENSION" % destname))
         try:
-            headers = download_file(photo, os.path.join(download_dir, "tmp"))
-            extension = guess_extension(headers)
+            url, headers = download_file(photo, os.path.join(download_dir, "tmp"))
+            extension = guess_extension(url, headers)
             shutil.move(os.path.join(download_dir, "tmp"), os.path.join(download_dir, "%s.%s" % (destname, extension)))
         finally:
             if os.path.exists(os.path.join(download_dir, "tmp")):
                 os.remove(os.path.join(download_dir, "tmp"))
 
-    for extension in extensions:
+    for extension in _extensions:
         if os.path.exists(os.path.join(download_dir, "%s.%s" % (destname, extension))):
             return os.path.join(download_dir, "%s.%s" % (destname, extension))
 
@@ -172,7 +172,7 @@ def download_file(photo, filename):
             sys.stdout.write("\n")
             sys.stdout.flush()
     _, headers = urllib.urlretrieve(url, filename, report)
-    return headers
+    return url, headers
 
 
 def preferred_size(photo):
@@ -184,16 +184,20 @@ def preferred_size(photo):
     raise(Exception("Could not find size 'Video Original' or 'Original' for photo %r" % (photo,)))
 
 
-def guess_extension(headers):
-    mime_type = headers['Content-Type']
-    extensions = {
-        'image/jpeg': 'jpg',
-        'image/png': 'png',
-        'video/mp4': 'mp4',
-        'video/quicktime': 'mov',
-        'application/x-shockwave-flash': 'flv',
-    }
-    return extensions[mime_type]
+def guess_extension(url, headers):
+    for extension in _extensions:
+        if url.lower().endswith("." + extension):
+            return extension
+    if headers['Content-Disposition']:
+        value, params = cgi.parse_header(headers['Content-Disposition'])
+        if value == 'attachment' and 'filename' in params:
+            _, dot_extension = os.path.splitext(params['filename'])
+            extension = dot_extension[1:].lower()
+            if extension in _extensions:
+                return extension
+    # It's tempting to look at the Content-Type header here, but in the real
+    # world, Flickr sets the wrong value for .mov files. So give up instead.
+    raise(Exception("Cannot guess extension for URL %r" % (url,)))
 
 
 def clean_stale_files(files_in_flickr, download_dir):
