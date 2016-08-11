@@ -13,6 +13,8 @@ import argparse
 import json
 import urllib2
 import cgi
+import socket
+import errno
 
 _forbidden_characters = r'<>:"/\|?*'
 _extensions = ["jpg", "mov", "mp4", "png", "flv"]
@@ -40,7 +42,7 @@ def main():
     for photo in walker:
         i += 1
         print("Item %04d/%04d entitled %r" % (i, total_photos, photo.title))
-        filename = download_item(photo, download_dir)
+        filename = automatic_retry(lambda: download_item(photo, download_dir))
         files_in_flickr.add(os.path.realpath(filename))
 
     if args.delete:
@@ -207,6 +209,20 @@ def clean_stale_files(files_in_flickr, download_dir):
         if path not in files_in_flickr:
             print("Deleting %s" % path)
             os.remove(path)
+
+
+def automatic_retry(function):
+    retries = 0
+    while retries < 10:
+        try:
+            return function()
+        except socket.error as ee:
+            if ee.errno == errno.ECONNRESET:
+                retries += 1
+                print("socket.error Connection reset by peer, retrying (%d)" % retries)
+            else:
+                raise
+    return function()
 
 
 if __name__ == "__main__":
