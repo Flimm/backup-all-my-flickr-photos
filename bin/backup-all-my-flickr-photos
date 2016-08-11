@@ -204,11 +204,14 @@ def guess_extension(url, headers):
 
 
 def clean_stale_files(files_in_flickr, download_dir):
+    count_deleted = 0
     for filename in os.listdir(download_dir):
         path = os.path.realpath(os.path.join(download_dir, filename))
         if path not in files_in_flickr:
             print("Deleting %s" % path)
             os.remove(path)
+            count_deleted += 1
+    print("Deleted %d files." % count_deleted)
 
 
 def automatic_retry(function):
