@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from setuptools import setup
 
-version='0.3'
+version='0.4'
 
 setup(
     name='backup_all_my_flickr_photos',
