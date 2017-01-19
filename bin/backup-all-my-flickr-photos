@@ -27,7 +27,7 @@ def main():
     download_dir = args.destination_directory
 
     if not os.path.exists(download_dir):
-        sys.stderr.write("Destination directory %r does not exist\n" % (download_dir,))
+        sys.stderr.write("Destination directory %s does not exist\n" % (download_dir,))
         sys.exit(1)
 
     set_up_flickr_keys()
@@ -41,7 +41,7 @@ def main():
     i = 0
     for photo in walker:
         i += 1
-        print("Item %04d/%04d entitled %r" % (i, total_photos, photo.title))
+        print("Item %04d/%04d entitled %s" % (i, total_photos, photo.title))
         filename = automatic_retry(lambda: download_item(photo, download_dir))
         files_in_flickr.add(os.path.realpath(filename))
 
@@ -152,7 +152,7 @@ def download_item(photo, download_dir):
             extension = guess_extension(url, headers)
             to = os.path.join(download_dir, "%s.%s" % (destname, extension))
             shutil.move(os.path.join(download_dir, "tmp"), to)
-            print("Done: %r" % (to,))
+            print("Done: %s" % (to,))
         finally:
             if os.path.exists(os.path.join(download_dir, "tmp")):
                 os.remove(os.path.join(download_dir, "tmp"))
@@ -184,7 +184,7 @@ def preferred_size(photo):
         return 'Video Original'
     elif 'Original' in sizes:
         return 'Original'
-    raise(Exception("Could not find size 'Video Original' or 'Original' for photo %r" % (photo,)))
+    raise(Exception("Could not find size 'Video Original' or 'Original' for photo %s" % (photo,)))
 
 
 def guess_extension(url, headers):
@@ -200,7 +200,7 @@ def guess_extension(url, headers):
                 return extension
     # It's tempting to look at the Content-Type header here, but in the real
     # world, Flickr sets the wrong value for .mov files. So give up instead.
-    raise(Exception("Cannot guess extension for URL %r" % (url,)))
+    raise(Exception("Cannot guess extension for URL %s" % (url,)))
 
 
 def clean_stale_files(files_in_flickr, download_dir):
