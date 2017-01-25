@@ -1,3 +1,7 @@
+# Version 0.5:
+
+- Small aesthetic change in output
+
 # Version 0.4:
 
 - Always download "Original" or "Original Video"
