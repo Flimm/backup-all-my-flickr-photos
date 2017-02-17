@@ -225,6 +225,9 @@ def automatic_retry(function):
                 print("socket.error Connection reset by peer, retrying (%d)" % retries)
             else:
                 raise
+        except urllib2.URLError as ee:
+            retries += 1
+            print("%r, retrying (%d)" % (ee, retries))
     return function()
 
 
