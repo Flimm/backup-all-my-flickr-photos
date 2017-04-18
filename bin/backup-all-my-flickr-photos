@@ -191,7 +191,7 @@ def guess_extension(url, headers):
     for extension in _extensions:
         if url.lower().endswith("." + extension):
             return extension
-    if headers['Content-Disposition']:
+    if 'Content-Disposition' in headers:
         value, params = cgi.parse_header(headers['Content-Disposition'])
         if value == 'attachment' and 'filename' in params:
             _, dot_extension = os.path.splitext(params['filename'])
