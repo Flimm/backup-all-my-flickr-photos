@@ -1,3 +1,8 @@
+# Version 0.6:
+
+- Download GIF files too, instead of throwing an exception
+- Be more tolerant of network errors
+
 # Version 0.5:
 
 - Small aesthetic change in output
