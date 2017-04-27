@@ -17,7 +17,7 @@ import socket
 import errno
 
 _forbidden_characters = r'<>:"/\|?*'
-_extensions = ["jpg", "mov", "mp4", "png", "flv"]
+_extensions = ["jpg", "mov", "mp4", "png", "flv", "gif"]
 
 def main():
     parser = argparse.ArgumentParser(description="Download all your photos and videos on Flickr")
