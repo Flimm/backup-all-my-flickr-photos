@@ -1,12 +1,20 @@
 #!/usr/bin/env python
 from setuptools import setup
+import os
 
 version='0.6'
+
+
+here = os.path.abspath(os.path.dirname(__file__))
+
+with open(os.path.join(here, 'README.rst'), "rb") as f:
+    long_description = f.read().decode("UTF-8")
 
 setup(
     name='backup_all_my_flickr_photos',
     version=version,
     description="A script to download all photos and videos in your Flickr account",
+    long_description=long_description,
     author="David D Lowe",
     author_email="daviddlowe.flimm@gmail.com",
     url="https://github.com/Flimm/backup-all-my-flickr-photos",
