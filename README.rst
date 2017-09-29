@@ -16,32 +16,11 @@ directory.
 Installation instructions:
 ==========================
 
-From Pypi
----------
+    pip install backup_all_my_flickr_photos
 
-You can install the latest stable release like this::
+It is recommended to create a Python 2 environment with `Virtualenv
+<https://virtualenv.pypa.io/en/stable/installation/>`_ first.
 
-
-    pip install backup_all_my_flickr_photos --user # to install in the user directory ~/.local
-
-If you want to install it globally, use this command::
-
-    sudo pip install backup_all_my_flickr_photos
-
-Many people find it easiest to use
-`Virtualenv <https://virtualenv.pypa.io/>`_.
-
-From source
------------
-
-::
-
-    git clone https://github.com/Flimm/backup-all-my-flickr-photos.git
-    cd backup-all-my-flickr-photos
-    virtualenv env
-    source env/bin/activate
-    python setup.py develop # install dependencies and script
-    backup-all-my-flickr-photos --help
 
 Run
 ===
