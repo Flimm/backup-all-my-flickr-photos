@@ -1,0 +1,10 @@
+language: python
+cache: pip
+
+python:
+    - "2.7"
+install:
+    - pip install docutils # needed for tests
+    - python setup.py -q install
+script:
+    - python setup.py check --restructured --strict --metadata
