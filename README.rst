@@ -41,3 +41,8 @@ secret, and to authorise the application.
 The script will guide you through this process.
 The information will get saved to
 ``~/.config/backup-all-my-flickr-photos/``.
+
+The files in the destination folder will be given an appropriate file extension
+and will be named with the name of the photo/movie (if it has a name), followed
+by an ID number.
+No other metadata is saved.
