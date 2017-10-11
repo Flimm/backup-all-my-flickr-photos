@@ -17,7 +17,7 @@ import socket
 import errno
 
 _forbidden_characters = r'<>:"/\|?*'
-_extensions = ["jpg", "mov", "mp4", "png", "flv", "gif", "raw"]
+_extensions = ["jpg", "mov", "mp4", "png", "flv", "gif", "TBD"]
 
 def main():
     parser = argparse.ArgumentParser(description="Download all your photos and videos on Flickr")
@@ -202,7 +202,7 @@ def guess_extension(url, headers):
     # It's tempting to look at the Content-Type header here, but in the real
     # world, Flickr sets the wrong value for .mov files. So give up instead.
     # raise(Exception("Cannot guess extension for URL %s" % (url,)))
-    return 'raw'
+    return 'TBD'
 
 
 def clean_stale_files(files_in_flickr, download_dir):
