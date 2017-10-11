@@ -21,6 +21,8 @@ _extensions = ["jpg", "mov", "mp4", "png", "flv", "gif", "unknown"]
 
 def main():
     parser = argparse.ArgumentParser(description="Download all your photos and videos on Flickr")
+    parser.add_argument('-g', '--gutter', dest='gutter', metavar='str',
+        default=' ', help="separate timestamp and picture ID with this")
     parser.add_argument('destination_directory', metavar='d', type=unicode, help='Destination directory')
     parser.add_argument('--delete', action='store_true', help="Delete files in destination directory that don't have corresponding items in the Flickr account")
     args = parser.parse_args()
@@ -42,7 +44,9 @@ def main():
     for photo in walker:
         i += 1
         print("Item %04d/%04d entitled %s" % (i, total_photos, photo.title))
-        filename = automatic_retry(lambda: download_item(photo, download_dir))
+        filename = automatic_retry(lambda: download_item(photo,
+                                                         download_dir),
+                                   args.gutter)
         files_in_flickr.add(os.path.realpath(filename))
 
     if args.delete:
@@ -137,10 +141,10 @@ def set_up_flickr_keys():
         print("API key and secret saved to %s" % (keys_filename,))
 
 
-def download_item(photo, download_dir):
+def download_item(photo, download_dir, gutter = '-'):
     if photo.title:
         title = reduce( lambda s,char: s.replace(char,''), _forbidden_characters, photo.title)
-        destname = "%s %s" % (title, photo.id)
+        destname = "%s%s%s" % (title, gutter, photo.id)
     else:
         destname = "%s" % (photo.id, )
 
