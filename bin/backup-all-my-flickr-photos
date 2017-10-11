@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/home/reynolds/xxx/bin/python2
 
 from __future__ import absolute_import, division, print_function
 
@@ -17,10 +17,12 @@ import socket
 import errno
 
 _forbidden_characters = r'<>:"/\|?*'
-_extensions = ["jpg", "mov", "mp4", "png", "flv", "gif"]
+_extensions = ["jpg", "mov", "mp4", "png", "flv", "gif", "unknown"]
 
 def main():
     parser = argparse.ArgumentParser(description="Download all your photos and videos on Flickr")
+    parser.add_argument('-g', '--gutter', dest='gutter', metavar='str',
+        default=' ', help="separate timestamp and picture ID with this")
     parser.add_argument('destination_directory', metavar='d', type=unicode, help='Destination directory')
     parser.add_argument('--delete', action='store_true', help="Delete files in destination directory that don't have corresponding items in the Flickr account")
     args = parser.parse_args()
@@ -42,7 +44,9 @@ def main():
     for photo in walker:
         i += 1
         print("Item %04d/%04d entitled %s" % (i, total_photos, photo.title))
-        filename = automatic_retry(lambda: download_item(photo, download_dir))
+        filename = automatic_retry(lambda: download_item(photo,
+                                                         download_dir),
+                                   args.gutter)
         files_in_flickr.add(os.path.realpath(filename))
 
     if args.delete:
@@ -125,7 +129,7 @@ def set_up_flickr_keys():
                     continue
                 else:
                     raise
-                
+
         json_data = {
             'api_key': api_key,
             'api_secret': api_secret,
@@ -137,10 +141,10 @@ def set_up_flickr_keys():
         print("API key and secret saved to %s" % (keys_filename,))
 
 
-def download_item(photo, download_dir):
+def download_item(photo, download_dir, gutter = '-'):
     if photo.title:
         title = reduce( lambda s,char: s.replace(char,''), _forbidden_characters, photo.title)
-        destname = "%s %s" % (title, photo.id)
+        destname = "%s%s%s" % (title, gutter, photo.id)
     else:
         destname = "%s" % (photo.id, )
 
@@ -191,7 +195,8 @@ def guess_extension(url, headers):
     for extension in _extensions:
         if url.lower().endswith("." + extension):
             return extension
-    if headers['Content-Disposition']:
+    # if headers['Content-Disposition']:
+    if headers.get( 'Content-Disposition', False ):
         value, params = cgi.parse_header(headers['Content-Disposition'])
         if value == 'attachment' and 'filename' in params:
             _, dot_extension = os.path.splitext(params['filename'])
@@ -200,7 +205,8 @@ def guess_extension(url, headers):
                 return extension
     # It's tempting to look at the Content-Type header here, but in the real
     # world, Flickr sets the wrong value for .mov files. So give up instead.
-    raise(Exception("Cannot guess extension for URL %s" % (url,)))
+    # raise(Exception("Cannot guess extension for URL %s" % (url,)))
+    return 'unknown'
 
 
 def clean_stale_files(files_in_flickr, download_dir):
