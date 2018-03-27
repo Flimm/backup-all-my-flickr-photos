@@ -18,7 +18,6 @@ setup(
     author="David D Lowe",
     author_email="daviddlowe.flimm@gmail.com",
     url="https://github.com/Flimm/backup-all-my-flickr-photos",
-    download_url="https://github.com/Flimm/backup-all-my-flickr-photos/tarball/v%s" % (version,),
     scripts=['bin/backup-all-my-flickr-photos'],
     install_requires=[
         'flickr_api',
