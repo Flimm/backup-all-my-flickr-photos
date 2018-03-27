@@ -8,20 +8,24 @@ import humanfriendly
 import os
 import sys
 import shutil
-import urllib
 import argparse
 import json
-import urllib2
 import cgi
 import socket
 import errno
+import six
+from six.moves import urllib, reduce, input
 
 _forbidden_characters = r'<>:"/\|?*'
 _extensions = ["jpg", "mov", "mp4", "png", "flv", "gif"]
 
+# monkey patch to fix bug in Walker
+if not hasattr(flickr_api.Walker, '__next__'):
+    flickr_api.Walker.__next__ = flickr_api.Walker.next
+
 def main():
     parser = argparse.ArgumentParser(description="Download all your photos and videos on Flickr")
-    parser.add_argument('destination_directory', metavar='d', type=unicode, help='Destination directory')
+    parser.add_argument('destination_directory', metavar='d', type=six.text_type, help='Destination directory')
     parser.add_argument('--delete', action='store_true', help="Delete files in destination directory that don't have corresponding items in the Flickr account")
     args = parser.parse_args()
     download_dir = args.destination_directory
@@ -62,7 +66,7 @@ def set_up_account_permissions():
         print("")
         oauth_code = None
         while not oauth_code:
-            oauth_code = raw_input("oauth_verifier value: ")
+            oauth_code = input("oauth_verifier value: ")
         auth_handler.set_verifier(oauth_code)
         flickr_api.set_auth_handler(auth_handler)
 
@@ -99,9 +103,9 @@ def set_up_flickr_keys():
         tested_api_successfully = False
         while not tested_api_successfully:
             while not api_key:
-                api_key = raw_input("API key: ").strip()
+                api_key = input("API key: ").strip()
             while not api_secret:
-                api_secret = raw_input("API secret: ").strip()
+                api_secret = input("API secret: ").strip()
             flickr_api.set_keys(api_key=api_key, api_secret=api_secret)
             try:
                 flickr_api.Person.findByUserName("test8975234985432")
@@ -118,7 +122,7 @@ def set_up_flickr_keys():
             try:
                 flickr_api.auth.AuthHandler()
                 tested_api_successfully = True
-            except urllib2.HTTPError as ee:
+            except urllib.error.HTTPError as ee:
                 if ee.code == 401:
                     print("This API key and secret combo seem to be invalid")
                     api_key, api_secret = None, None
@@ -174,7 +178,7 @@ def download_file(photo, filename):
         if percentage >= 100:
             sys.stdout.write("\n")
             sys.stdout.flush()
-    _, headers = urllib.urlretrieve(url, filename, report)
+    _, headers = urllib.request.urlretrieve(url, filename, report)
     return url, headers
 
 
@@ -225,7 +229,7 @@ def automatic_retry(function):
                 print("socket.error Connection reset by peer, retrying (%d)" % retries)
             else:
                 raise
-        except urllib2.URLError as ee:
+        except (urllib.error.URLError, urllib.error.ContentTooShortError) as ee:
             retries += 1
             print("%r, retrying (%d)" % (ee, retries))
     return function()

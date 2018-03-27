@@ -18,7 +18,7 @@ Installation instructions:
 
     pip install backup_all_my_flickr_photos
 
-It is recommended to create a Python 2 environment with `Virtualenv
+It is recommended to create a Python environment with `Virtualenv
 <https://virtualenv.pypa.io/en/stable/installation/>`_ first.
 
 

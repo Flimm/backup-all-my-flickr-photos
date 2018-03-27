@@ -22,6 +22,7 @@ setup(
     scripts=['bin/backup-all-my-flickr-photos'],
     install_requires=[
         'flickr_api',
+        'future',
         'humanfriendly',
     ],
     license='bsd',
@@ -29,6 +30,7 @@ setup(
         'License :: OSI Approved :: BSD License',
         'Programming Language :: Python',
         'Programming Language :: Python :: 2',
+        'Programming Language :: Python :: 3',
         'Environment :: Console',
     ],
 )
