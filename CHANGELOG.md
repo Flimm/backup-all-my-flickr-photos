@@ -1,3 +1,9 @@
+# Version 0.7
+
+- Support both Python 3 and Python 2
+- Be more tolerant of network errors
+- Improve documentation
+
 # Version 0.6:
 
 - Download GIF files too, instead of throwing an exception
