@@ -1,3 +1,9 @@
+# Version 0.8
+
+- Fix encoding exception thrown in Python 3
+- Fix error related to Content-Disposition header (thanks mherdeg)
+- Some metadata changes, especially for the new pypi.org website
+
 # Version 0.7
 
 - Support both Python 3 and Python 2
