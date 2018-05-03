@@ -25,6 +25,11 @@ setup(
         'humanfriendly',
     ],
     license='bsd',
+    project_urls={
+        'GitHub': 'https://github.com/Flimm/backup-all-my-flickr-photos',
+        'Change log': 'https://github.com/Flimm/backup-all-my-flickr-photos/blob/master/CHANGELOG.md',
+    },
+    python_requires='>=2.7, !=3.0.*, !=3.1.*, !=3.2.*, <4',
     classifiers=[
         'License :: OSI Approved :: BSD License',
         'Programming Language :: Python',
