@@ -137,7 +137,7 @@ def set_up_flickr_keys():
         if not os.path.exists(config_directory):
             os.makedirs(config_directory)
         with open(keys_filename, "wb") as f:
-            json.dump(json_data, f)
+            f.write(json.dumps(json_data).encode("UTF-8"))
         print("API key and secret saved to %s" % (keys_filename,))
 
 
