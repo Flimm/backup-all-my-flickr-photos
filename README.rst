@@ -2,13 +2,13 @@ backup-all-my-flickr-photos
 ===========================
 
 .. image:: https://img.shields.io/pypi/v/backup_all_my_flickr_photos.svg
-    :target: https://pypi.python.org/pypi/backup_all_my_flickr_photos
+    :target: https://pypi.org/project/backup_all_my_flickr_photos/
 .. image:: https://img.shields.io/pypi/l/backup_all_my_flickr_photos.svg
-    :target: https://pypi.python.org/pypi/backup_all_my_flickr_photos
+    :target: https://pypi.org/project/backup_all_my_flickr_photos/
 .. image:: https://img.shields.io/pypi/wheel/backup_all_my_flickr_photos.svg
-    :target: https://pypi.python.org/pypi/backup_all_my_flickr_photos
+    :target: https://pypi.org/project/backup_all_my_flickr_photos/
 .. image:: https://img.shields.io/pypi/pyversions/backup_all_my_flickr_photos.svg
-    :target: https://pypi.python.org/pypi/backup_all_my_flickr_photos
+    :target: https://pypi.org/project/backup_all_my_flickr_photos/
     
 This scripts simply downloads all your Flickr photos and videos into a
 directory.
