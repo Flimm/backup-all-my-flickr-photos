@@ -173,7 +173,7 @@ def download_file(photo, filename):
     def report(count_of_block, block_size, total_size):
         # print(count_of_block, block_size, total_size)
         percentage = (count_of_block * block_size * 100 ) / total_size
-        sys.stdout.write("\r%d%% of %s" % (percentage, humanfriendly.format_size(total_size)))
+        sys.stdout.write("\r%3d%% of %s" % (percentage, humanfriendly.format_size(total_size)))
         sys.stdout.flush()
         if percentage >= 100:
             sys.stdout.write("\n")
