@@ -1,3 +1,9 @@
+# Version 0.9
+
+- Better error handling of ContentTooShortError
+- Small change in output
+- Published as a universal wheel
+
 # Version 0.8
 
 - Fix encoding exception thrown in Python 3
