@@ -7,7 +7,7 @@ version='0.8'
 
 here = os.path.abspath(os.path.dirname(__file__))
 
-with open(os.path.join(here, 'README.rst'), "rb") as f:
+with open(os.path.join(here, 'README.md'), "rb") as f:
     long_description = f.read().decode("UTF-8")
 
 setup(
@@ -15,6 +15,7 @@ setup(
     version=version,
     description="A script to download all photos and videos in your Flickr account",
     long_description=long_description,
+    long_description_content_type='text/markdown',
     author="David D Lowe",
     author_email="daviddlowe.flimm@gmail.com",
     url="https://github.com/Flimm/backup-all-my-flickr-photos",
