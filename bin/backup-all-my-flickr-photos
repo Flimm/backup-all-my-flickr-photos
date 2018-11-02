@@ -26,6 +26,7 @@ if not hasattr(flickr_api.Walker, '__next__'):
 def main():
     parser = argparse.ArgumentParser(description="Download all your photos and videos on Flickr")
     parser.add_argument('destination_directory', metavar='d', type=six.text_type, help='Destination directory')
+    parser.add_argument('--meta', action='store_true', default=False, help="Download photo metadata in sidecar .json files")
     parser.add_argument('--delete', action='store_true', help="Delete files in destination directory that don't have corresponding items in the Flickr account")
     args = parser.parse_args()
     download_dir = args.destination_directory
@@ -46,7 +47,7 @@ def main():
     for photo in walker:
         i += 1
         print("Item %04d/%04d entitled %s" % (i, total_photos, photo.title))
-        filename = automatic_retry(lambda: download_item(photo, download_dir))
+        filename = automatic_retry(lambda: download_item(photo, download_dir, args.meta))
         files_in_flickr.add(os.path.realpath(filename))
 
     if args.delete:
@@ -141,7 +142,7 @@ def set_up_flickr_keys():
         print("API key and secret saved to %s" % (keys_filename,))
 
 
-def download_item(photo, download_dir):
+def download_item(photo, download_dir, get_meta=False):
     if photo.title:
         title = reduce( lambda s,char: s.replace(char,''), _forbidden_characters, photo.title)
         destname = "%s %s" % (title, photo.id)
@@ -152,10 +153,13 @@ def download_item(photo, download_dir):
 
     if not file_exists():
         try:
-            url, headers = download_file(photo, os.path.join(download_dir, "tmp"))
+            url, headers, meta = download_file(photo, os.path.join(download_dir, "tmp"), get_meta)
             extension = guess_extension(url, headers)
             to = os.path.join(download_dir, "%s.%s" % (destname, extension))
             shutil.move(os.path.join(download_dir, "tmp"), to)
+            if get_meta:
+              with open(to + '.json', 'w') as f:
+                  json.dump(meta, f)
             print("Done: %s" % (to,))
         finally:
             if os.path.exists(os.path.join(download_dir, "tmp")):
@@ -168,8 +172,24 @@ def download_item(photo, download_dir):
     raise(Exception("Expected to find file %s.EXTENSION" % (destname,)))
 
 
-def download_file(photo, filename):
+def download_file(photo, filename, get_meta=False):
     url = photo.getPhotoFile(preferred_size(photo))
+    if get_meta:
+        full_info = photo.getInfo()
+        meta = {
+            "description": full_info['description'],
+            "people": map(lambda t: t.username, photo.getPeople()),
+            "posted": full_info['posted'],
+            "tags": map(lambda t: t.text, photo.getTags()),
+            "taken": full_info['taken'],
+            "title": full_info['title'],
+            "latitude": full_info.get('location', {}).get('latitude', None),
+            "longitude": full_info.get('location', {}).get('longitude', None),
+            "private": not (full_info['ispublic'] == 1),
+            "sets": map(lambda s: s.title, photo.getAllContexts()[0])
+        }
+    else:
+        meta = None
     def report(count_of_block, block_size, total_size):
         # print(count_of_block, block_size, total_size)
         percentage = (count_of_block * block_size * 100 ) / total_size
@@ -179,7 +199,7 @@ def download_file(photo, filename):
             sys.stdout.write("\n")
             sys.stdout.flush()
     _, headers = urllib.request.urlretrieve(url, filename, report)
-    return url, headers
+    return url, headers, meta
 
 
 def preferred_size(photo):

@@ -20,7 +20,7 @@ It is recommended to create a Python environment with
 Run
 ===
 
-    backup-all-my-flickr-photos [--delete] <destination_directory>
+    backup-all-my-flickr-photos [--delete] [--meta] <destination_directory>
 
 This will download all the photos and videos in your account to the
 destination directory specified.
@@ -28,6 +28,9 @@ destination directory specified.
 If you specified the `--delete` flag, it will also delete files in the
 destination directory that do not correspond to photos or videos in your
 Flickr account.
+
+If you specified the `--meta` flag, it will store photo metadata in
+`.json` files alongside media files in the destination folder.
 
 On the the first run, you will be prompted to provide an API key and
 secret, and to authorise the application. The script will guide you
