@@ -178,15 +178,15 @@ def download_file(photo, filename, get_meta=False):
         full_info = photo.getInfo()
         meta = {
             "description": full_info['description'],
-            "people": map(lambda t: t.username, photo.getPeople()),
+            "people": list(map(lambda t: t.username, photo.getPeople())),
             "posted": full_info['posted'],
-            "tags": map(lambda t: t.text, photo.getTags()),
+            "tags": list(map(lambda t: t.text, photo.getTags())),
             "taken": full_info['taken'],
             "title": full_info['title'],
             "latitude": full_info.get('location', {}).get('latitude', None),
             "longitude": full_info.get('location', {}).get('longitude', None),
             "private": not (full_info['ispublic'] == 1),
-            "sets": map(lambda s: s.title, photo.getAllContexts()[0])
+            "sets": list(map(lambda s: s.title, photo.getAllContexts()[0]))
         }
     else:
         meta = None
