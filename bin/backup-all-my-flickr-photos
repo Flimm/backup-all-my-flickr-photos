@@ -54,6 +54,29 @@ def main():
         clean_stale_files(files_in_flickr, download_dir)
 
 
+def automatic_retry(function):
+    @functools.wraps(function)
+    def wrapper(*args, **kwargs):
+        retries = 0
+        while retries < 10:
+            try:
+                return function(*args, **kwargs)
+            except (urllib.error.URLError, urllib.error.ContentTooShortError) as ee:
+                retries += 1
+                print("%r, retrying (%d)" % (ee, retries))
+            except socket.error as ee:
+                if ee.errno == errno.ECONNRESET:
+                    retries += 1
+                    print("socket.error Connection reset by peer, retrying (%d)" % retries)
+                else:
+                    print("Unrecognized socket error", file=sys.stderr)
+                    raise
+        print("Reached number of retries: %d" % (retries,))
+        return function(*args, **kwargs)
+
+    return wrapper
+
+
 def set_up_account_permissions():
     config_directory = get_config_directory()
     auth_filename = os.path.join(config_directory, "account_auth")
@@ -145,6 +168,7 @@ def set_up_flickr_keys():
         print("API key and secret saved to %s" % (keys_filename,))
 
 
+@automatic_retry
 def download_item(photo, download_dir):
     if photo.title:
         title = reduce( lambda s,char: s.replace(char,''), _forbidden_characters, photo.title)
@@ -226,25 +250,6 @@ def clean_stale_files(files_in_flickr, download_dir):
             os.remove(path)
             count_deleted += 1
     print("Deleted %d files." % count_deleted)
-
-
-def automatic_retry(function):
-    retries = 0
-    while retries < 10:
-        try:
-            return function()
-        except (urllib.error.URLError, urllib.error.ContentTooShortError) as ee:
-            retries += 1
-            print("%r, retrying (%d)" % (ee, retries))
-        except socket.error as ee:
-            if ee.errno == errno.ECONNRESET:
-                retries += 1
-                print("socket.error Connection reset by peer, retrying (%d)" % retries)
-            else:
-                print("Unrecognized socket error", file=sys.stderr)
-                raise
-    print("Reached number of retries: %d" % (retries,))
-    return function()
 
 
 if __name__ == "__main__":
