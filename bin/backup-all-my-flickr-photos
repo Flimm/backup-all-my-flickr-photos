@@ -2,17 +2,17 @@
 
 from __future__ import absolute_import, division, print_function
 
+import argparse
+import cgi
+import errno
+import json
+import os
+import shutil
+import socket
+import sys
+
 import flickr_api
 import humanfriendly
-
-import os
-import sys
-import shutil
-import argparse
-import json
-import cgi
-import socket
-import errno
 import six
 from six.moves import urllib, reduce, input
 
