@@ -22,8 +22,8 @@ setup(
     scripts=['bin/backup-all-my-flickr-photos'],
     install_requires=[
         'flickr_api',
-        'future',
         'humanfriendly',
+        'six',
     ],
     license='bsd',
     project_urls={
