@@ -23,6 +23,7 @@ _extensions = ["jpg", "mov", "mp4", "png", "flv", "gif"]
 if not hasattr(flickr_api.Walker, '__next__'):
     flickr_api.Walker.__next__ = flickr_api.Walker.next
 
+
 def main():
     parser = argparse.ArgumentParser(description="Download all your photos and videos on Flickr")
     parser.add_argument('destination_directory', metavar='d', type=six.text_type, help='Destination directory')
@@ -52,6 +53,7 @@ def main():
     if args.delete:
         clean_stale_files(files_in_flickr, download_dir)
 
+
 def set_up_account_permissions():
     config_directory = get_config_directory()
     auth_filename = os.path.join(config_directory, "account_auth")
@@ -76,12 +78,14 @@ def set_up_account_permissions():
         auth_handler.save(auth_filename)
         print("Authorization saved to %s" % (auth_filename,))
 
+
 def get_config_directory():
     home_directory = os.getenv("HOME", os.path.expanduser("~"))
     return os.path.join(
         os.getenv("XDG_CONFIG_HOME", os.path.join(home_directory, ".config")),
         "backup-all-my-flickr-photos",
     )
+
 
 def set_up_flickr_keys():
     config_directory = get_config_directory()
@@ -170,6 +174,7 @@ def download_item(photo, download_dir):
 
 def download_file(photo, filename):
     url = photo.getPhotoFile(preferred_size(photo))
+
     def report(count_of_block, block_size, total_size):
         # print(count_of_block, block_size, total_size)
         percentage = (count_of_block * block_size * 100 ) / total_size
