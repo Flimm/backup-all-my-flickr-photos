@@ -17,7 +17,7 @@ import six
 from six.moves import urllib, reduce, input
 
 _forbidden_characters = r'<>:"/\|?*'
-_extensions = ["jpg", "mov", "mp4", "png", "flv", "gif"]
+_extensions = [".jpg", ".mov", ".mp4", ".png", ".flv", ".gif"]
 
 # monkey patch to fix bug in Walker
 if not hasattr(flickr_api.Walker, '__next__'):
@@ -152,22 +152,26 @@ def download_item(photo, download_dir):
     else:
         destname = "%s" % (photo.id, )
 
-    file_exists = lambda: any([os.path.exists(os.path.join(download_dir, "%s.%s" % (destname, x))) for x in _extensions])
+    def path(extension):
+        return os.path.join(download_dir, "%s%s" % (destname, extension))
 
-    if not file_exists():
+    file_exists = any(os.path.exists(path(extension)) for extension in _extensions)
+    if not file_exists:
         try:
-            url, headers = download_file(photo, os.path.join(download_dir, "tmp"))
+            tmp_path = os.path.join(download_dir, "tmp")
+            url, headers = download_file(photo, tmp_path)
             extension = guess_extension(url, headers)
-            to = os.path.join(download_dir, "%s.%s" % (destname, extension))
+            to = path(extension)
             shutil.move(os.path.join(download_dir, "tmp"), to)
             print("Done: %s" % (to,))
         finally:
-            if os.path.exists(os.path.join(download_dir, "tmp")):
-                os.remove(os.path.join(download_dir, "tmp"))
+            if os.path.exists(tmp_path):
+                os.remove(tmp_path)
 
     for extension in _extensions:
-        if os.path.exists(os.path.join(download_dir, "%s.%s" % (destname, extension))):
-            return os.path.join(download_dir, "%s.%s" % (destname, extension))
+        path_guess = path(extension)
+        if os.path.exists(path_guess):
+            return path_guess
 
     raise(Exception("Expected to find file %s.EXTENSION" % (destname,)))
 
@@ -197,14 +201,13 @@ def preferred_size(photo):
 
 
 def guess_extension(url, headers):
-    for extension in _extensions:
-        if url.lower().endswith("." + extension):
-            return extension
+    extension = os.path.splitext(url)[1].lower()
+    if extension in _extensions:
+        return extension
     if headers.get('Content-Disposition'):
         value, params = cgi.parse_header(headers['Content-Disposition'])
         if value == 'attachment' and 'filename' in params:
-            _, dot_extension = os.path.splitext(params['filename'])
-            extension = dot_extension[1:].lower()
+            extension = os.path.splitext(params['filename'])[1].lower()
             if extension in _extensions:
                 return extension
     if '/play/' in url.lower():
