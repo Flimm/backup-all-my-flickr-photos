@@ -176,6 +176,8 @@ def set_up_flickr_keys():
 def destination(obj):
     if obj.title:
         title = reduce(lambda s, char: s.replace(char, ''), _forbidden_characters, obj.title)
+        if title.startswith('.'):
+            title = ' %s' % title
         return "%s %s" % (title, obj.id)
     return "%s" % (obj.id,)
 
