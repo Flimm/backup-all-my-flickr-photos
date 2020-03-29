@@ -5,6 +5,7 @@ from __future__ import absolute_import, division, print_function
 import argparse
 import cgi
 import errno
+import functools
 import json
 import os
 import shutil
@@ -28,6 +29,7 @@ def main():
     parser = argparse.ArgumentParser(description="Download all your photos and videos on Flickr")
     parser.add_argument('destination_directory', metavar='d', type=six.text_type, help='Destination directory')
     parser.add_argument('--delete', action='store_true', help="Delete files in destination directory that don't have corresponding items in the Flickr account")
+    parser.add_argument('--albums', action='store_true', help='Create album directories and symlink photos there')
     args = parser.parse_args()
     download_dir = args.destination_directory
 
@@ -42,12 +44,15 @@ def main():
     total_photos = user.getPhotos().info.total
     walker = flickr_api.Walker(user.getPhotos)
     files_in_flickr = set()
+    dirs_in_flickr = set()
 
     i = 0
     for photo in walker:
         i += 1
         print("Item %04d/%04d entitled %s" % (i, total_photos, photo.title))
-        filename = automatic_retry(lambda: download_item(photo, download_dir))
+        filename = download_item(photo, download_dir)
+        if args.albums:
+            dirs_in_flickr.update(add_to_albums(photo, filename, download_dir))
         files_in_flickr.add(os.path.realpath(filename))
 
     if args.delete:
@@ -168,13 +173,16 @@ def set_up_flickr_keys():
         print("API key and secret saved to %s" % (keys_filename,))
 
 
+def destination(obj):
+    if obj.title:
+        title = reduce(lambda s, char: s.replace(char, ''), _forbidden_characters, obj.title)
+        return "%s %s" % (title, obj.id)
+    return "%s" % (obj.id,)
+
+
 @automatic_retry
 def download_item(photo, download_dir):
-    if photo.title:
-        title = reduce( lambda s,char: s.replace(char,''), _forbidden_characters, photo.title)
-        destname = "%s %s" % (title, photo.id)
-    else:
-        destname = "%s" % (photo.id, )
+    destname = destination(photo)
 
     def path(extension):
         return os.path.join(download_dir, "%s%s" % (destname, extension))
@@ -237,6 +245,21 @@ def guess_extension(url, headers):
     # It's tempting to look at the Content-Type header here, but in the real
     # world, Flickr sets the wrong value for .mov files. So give up instead.
     raise(Exception("Cannot guess extension for URL %s" % (url,)))
+
+
+def add_to_albums(photo, filename, download_dir):
+    albums, _groups = automatic_retry(photo.getAllContexts)()
+    album_dirs = [os.path.join(download_dir, destination(album)) for album in albums]
+    basename = os.path.basename(filename)
+    for dirname in album_dirs:
+        linkname = os.path.join(dirname, basename)
+        if os.path.exists(linkname):
+            continue
+        if not os.path.exists(dirname):
+            os.makedirs(dirname)
+        relpath = os.path.relpath(filename, dirname)
+        os.symlink(relpath, linkname)
+    return album_dirs
 
 
 def clean_stale_files(files_in_flickr, download_dir):
