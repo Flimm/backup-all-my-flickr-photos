@@ -53,7 +53,7 @@ def main():
         filename = download_item(photo, download_dir)
         if args.albums:
             dirs_in_flickr.update(add_to_albums(photo, filename, download_dir))
-        files_in_flickr.add(os.path.realpath(filename))
+        files_in_flickr.add(os.path.abspath(filename))
 
     if args.delete:
         clean_stale_files(files_in_flickr, download_dir)
@@ -265,7 +265,7 @@ def add_to_albums(photo, filename, download_dir):
 def clean_stale_files(files_in_flickr, download_dir):
     count_deleted = 0
     for filename in os.listdir(download_dir):
-        path = os.path.realpath(os.path.join(download_dir, filename))
+        path = os.path.abspath(os.path.join(download_dir, filename))
         if path not in files_in_flickr:
             print("Deleting %s" % path)
             os.remove(path)
