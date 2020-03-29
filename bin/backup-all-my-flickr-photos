@@ -52,11 +52,13 @@ def main():
         print("Item %04d/%04d entitled %s" % (i, total_photos, photo.title))
         filename = download_item(photo, download_dir)
         if args.albums:
-            dirs_in_flickr.update(add_to_albums(photo, filename, download_dir))
+            files, dirs = add_to_albums(photo, filename, download_dir)
+            files_in_flickr.update(files)
+            dirs_in_flickr.update(dirs)
         files_in_flickr.add(os.path.abspath(filename))
 
     if args.delete:
-        clean_stale_files(files_in_flickr, download_dir)
+        clean_stale_files(files_in_flickr, dirs_in_flickr, download_dir)
 
 
 def automatic_retry(function):
@@ -253,28 +255,47 @@ def guess_extension(url, headers):
 
 def add_to_albums(photo, filename, download_dir):
     albums, _groups = automatic_retry(photo.getAllContexts)()
-    album_dirs = [os.path.join(download_dir, destination(album)) for album in albums]
+    dirs = [os.path.join(download_dir, destination(album)) for album in albums]
+    filenames = []
     basename = os.path.basename(filename)
-    for dirname in album_dirs:
+    for dirname in dirs:
         linkname = os.path.join(dirname, basename)
+        filenames.append(linkname)
         if os.path.exists(linkname):
             continue
         if not os.path.exists(dirname):
             os.makedirs(dirname)
         relpath = os.path.relpath(filename, dirname)
         os.symlink(relpath, linkname)
-    return album_dirs
+    return filenames, dirs
 
 
-def clean_stale_files(files_in_flickr, download_dir):
-    count_deleted = 0
-    for filename in os.listdir(download_dir):
-        path = os.path.abspath(os.path.join(download_dir, filename))
-        if path not in files_in_flickr:
-            print("Deleting %s" % path)
-            os.remove(path)
-            count_deleted += 1
-    print("Deleted %d files." % count_deleted)
+def clean_stale_files(files_in_flickr, dirs_in_flickr, download_dir):
+    count_files_deleted = 0
+    count_dirs_deleted = 0
+    for root, dirs, files in os.walk(download_dir):
+        dirs_to_walk_further = []
+        for d in dirs:
+            if d.startswith('.'):
+                continue
+            path = os.path.join(root, d)
+            if path not in dirs_in_flickr:
+                print("Deleting directory %s" % path)
+                shutil.rmtree(path)
+                count_dirs_deleted += 1
+            else:
+                dirs_to_walk_further.append(d)
+        dirs[:] = dirs_to_walk_further
+
+        for f in files:
+            if f.startswith('.'):
+                continue
+            path = os.path.join(root, f)
+            if path not in files_in_flickr:
+                print("Deleting file %s" % path)
+                os.remove(path)
+                count_files_deleted += 1
+    print("Deleted %d files and %d directories" % (count_files_deleted, count_dirs_deleted))
 
 
 if __name__ == "__main__":
