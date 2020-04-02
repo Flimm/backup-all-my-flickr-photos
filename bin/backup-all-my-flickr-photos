@@ -202,6 +202,8 @@ def guess_extension(url, headers):
             extension = dot_extension[1:].lower()
             if extension in _extensions:
                 return extension
+    if '/play/' in url.lower():
+        return 'mp4'
     # It's tempting to look at the Content-Type header here, but in the real
     # world, Flickr sets the wrong value for .mov files. So give up instead.
     raise(Exception("Cannot guess extension for URL %s" % (url,)))
