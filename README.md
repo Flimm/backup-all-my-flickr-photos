@@ -12,9 +12,9 @@ directory.
 Installation instructions:
 ==========================
 
-    pip install backup_all_my_flickr_photos
+    pip3 install backup_all_my_flickr_photos
 
-It is recommended to create a Python environment with
+It is recommended to create a Python 3 environment with
 [Virtualenv](https://virtualenv.pypa.io/en/stable/installation/) first.
 
 Run
