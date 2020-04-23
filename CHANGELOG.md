@@ -1,3 +1,11 @@
+# Version 1.0
+
+- Drop support for Python 2
+- New option: --albums: Create album directories and symlink photos there.
+  (This feature cannot be used on Windows because it needs symlinks)
+- New option: --skip-errors: Don't quit on error, but go to the next download
+- Improve guessing of file type when downloading videos
+
 # Version 0.9
 
 - Better error handling of ContentTooShortError

@@ -2,7 +2,7 @@
 from setuptools import setup
 import os
 
-version='0.9'
+version='1.0'
 
 
 here = os.path.abspath(os.path.dirname(__file__))
