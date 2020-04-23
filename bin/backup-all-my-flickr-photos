@@ -29,7 +29,8 @@ def main():
     parser = argparse.ArgumentParser(description="Download all your photos and videos on Flickr")
     parser.add_argument('destination_directory', metavar='d', type=six.text_type, help='Destination directory')
     parser.add_argument('--delete', action='store_true', help="Delete files in destination directory that don't have corresponding items in the Flickr account")
-    parser.add_argument('--albums', action='store_true', help='Create album directories and symlink photos there')
+    parser.add_argument('--albums', action='store_true', help='Create album directories and symlink photos there. (Windows not supported because this feature uses symlinks)')
+    parser.add_argument('--skip-errors', '-s', action='store_true', help='If there is an error downloading a file, skip it')
     args = parser.parse_args()
     download_dir = args.destination_directory
 
@@ -50,7 +51,13 @@ def main():
     for photo in walker:
         i += 1
         print("Item %04d/%04d entitled %s" % (i, total_photos, photo.title))
-        filename = download_item(photo, download_dir)
+        try:
+            filename = download_item(photo, download_dir)
+        except urllib.error.URLError as ee:
+            if args.skip_errors:
+                print("Could not download file successfully, got error: %s" % (ee,))
+            else:
+                raise
         if args.albums:
             files, dirs = add_to_albums(photo, filename, download_dir)
             files_in_flickr.update(files)
