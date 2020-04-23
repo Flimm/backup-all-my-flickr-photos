@@ -2,13 +2,12 @@ language: python
 cache: pip
 
 python:
-    - "2.7"
-    - "3.3"
     - "3.4"
     - "3.5"
     - "3.6"
+    - "3.7"
+    - "3.8"
 install:
-    - pip install docutils # needed for tests
     - python setup.py -q install
 script:
-    - python setup.py check --restructured --strict --metadata
+    - python setup.py check --strict --metadata
