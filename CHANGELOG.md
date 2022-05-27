@@ -1,3 +1,7 @@
+# Version 1.1
+
+- Fix bug regarding the naming of `.mp4` videos
+
 # Version 1.0
 
 - Drop support for Python 2
